@@ -1,6 +1,5 @@
 json_file="/tmp/getsetcheck_json_parameters"
 
-
 check_set()
 {
     key="$1"
@@ -30,13 +29,10 @@ set_ssm_param()
 	        jq ".Parameters[]" <<< $json >> "${json_file}"
 	        next_token=$(jq --raw-output ".NextToken" <<< $json)
 	    done
-
         fi 
-
 
         json_value="$(jq "select(.Name==\"${prefix}${key}\") | .Value" <"${json_file}")"
         value_type="$(jq "select(.Name==\"${prefix}${key}\") | .Type" <"${json_file}" | sed 's/^"\|"$//g')"
-
 
         if [ "$json_value" == "null" ]; then
             echo "Could not get value for '${prefix}${key}'"
@@ -44,11 +40,7 @@ set_ssm_param()
         fi 
 
         value=$(sed 's/^"\|"$//g' <<< $json_value)
-
-        
     fi
-
-    
 
     export "$key=$value"
 
@@ -57,7 +49,6 @@ set_ssm_param()
     else
         echo "$key=<Redacted>"
     fi 
-
 }
 
 check_network()
@@ -73,7 +64,6 @@ check_network()
     count=0
     limit=20
 
-
     while ! nc -z "$host" "$port"; do
         count=$((count + 1))
         if ((count >= limit)); then
@@ -86,7 +76,6 @@ check_network()
     done
 
     echo "Successfully reached '${host}:${port}'"
-
 }
 
 for var in $mandatory_param_array; do 
@@ -102,4 +91,3 @@ for var in $network_socket_array; do
     echo "Checking network for '$var'"
     check_network "$var"
 done 
-
