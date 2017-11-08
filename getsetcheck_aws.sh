@@ -49,9 +49,9 @@ set_ssm_param()
     export "$key=$value"
 
     if [ "$value_type" != 'SecureString' ]; then
-        echo "setting $key=$value"
+        echo "$key=$value"
     else
-        echo "setting $key=<Redacted>"
+        echo "$key=<Redacted>"
     fi 
 }
 
