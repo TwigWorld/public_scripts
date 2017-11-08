@@ -38,7 +38,7 @@ set_ssm_param()
         json_value="$(jq "select(.Name==\"${prefix}${key}\") | .Value" <"${json_file}")"
         value_type="$(jq "select(.Name==\"${prefix}${key}\") | .Type" <"${json_file}" | sed 's/^"\|"$//g')"
 
-        if [ "$json_value" == "null" ]; then
+        if [ -z "$json_value" ]; then
             echo "Could not get value for '${prefix}${key}'"
             exit 1
         fi 
@@ -49,9 +49,9 @@ set_ssm_param()
     export "$key=$value"
 
     if [ "$value_type" != 'SecureString' ]; then
-        echo "$key=$value"
+        echo "setting $key=$value"
     else
-        echo "$key=<Redacted>"
+        echo "setting $key=<Redacted>"
     fi 
 }
 
