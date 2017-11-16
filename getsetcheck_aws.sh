@@ -91,7 +91,9 @@ for var in $optional_param_array; do
     set_ssm_param "$var"
 done 
 
-for var in $network_socket_array; do
-    echo "Checking network for '$var'"
-    check_network "$var"
-done 
+if [[ ! -z $SKIP_NETWORK_CHECKS ]]; then 
+    for var in $network_socket_array; do
+        echo "Checking network for '$var'"
+        check_network "$var"
+    done 
+fi 
