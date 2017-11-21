@@ -35,18 +35,18 @@ set_ssm_param()
 	    done
         fi 
 
-        json_value="$(jq "select(.Name==\"${prefix}${key}\") | .Value" <"${json_file}")"
-        value_type="$(jq "select(.Name==\"${prefix}${key}\") | .Type" <"${json_file}" | sed 's/^"\|"$//g')"
+        json_value="$(jq "select(.Name==\"${prefix}${key}\") | .Value" <"${json_file}" | sed 's/^"//g' | sed 's/"$//g')"
+        value_type="$(jq "select(.Name==\"${prefix}${key}\") | .Type" <"${json_file}" | sed 's/^"//g' | sed 's/"$//g')"
 
         if [ -z "$json_value" ]; then
             echo "Could not get value for '${prefix}${key}'"
             exit 1
         fi 
 
-        value=$(sed 's/^"\|"$//g' <<< $json_value)
+        value="$json_value"
     fi
 
-    export "$key=$value"
+    export $key="$value"
 
     if [ "$value_type" != 'SecureString' ]; then
         echo "$key=$value"
@@ -91,7 +91,9 @@ for var in $optional_param_array; do
     set_ssm_param "$var"
 done 
 
-for var in $network_socket_array; do
-    echo "Checking network for '$var'"
-    check_network "$var"
-done 
+if [[ -z $SKIP_NETWORK_CHECKS ]]; then 
+    for var in $network_socket_array; do
+        echo "Checking network for '$var'"
+        check_network "$var"
+    done 
+fi 
