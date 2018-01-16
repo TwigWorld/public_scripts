@@ -1,8 +1,13 @@
+# This file should be sourced, not run directly
+
+# Runtime flags
+nc_timout="${NC_TIMEOUT:-5}"
+network_check_limit="${NETWORK_CHECK_LIMIT:-20}"
+skip_network_checks="${SKIP_NETWORK_CHECKS}"
+
 working_dir="$(dirname $(readlink -f "$0"))"
 param_file="${working_dir}/params"
 json_file="/tmp/getsetcheck_json_parameters"
-nc_timout="${NC_TIMEOUT:-5}"
-
 
 source "$param_file"
 
@@ -69,7 +74,7 @@ check_network()
     port="$(eval echo \$$port_key)"
 
     count=0
-    limit="${NETWORK_CHECK_LIMIT:-20}"
+    limit="$network_check_limit"
 
     while ! nc -z -w "$nc_timout" "$host" "$port"; do
         count=$((count + 1))
@@ -94,7 +99,7 @@ for var in $optional_param_array; do
     set_ssm_param "$var"
 done 
 
-if [[ -z $SKIP_NETWORK_CHECKS ]]; then 
+if [[ -z $skip_network_checks ]]; then 
     for var in $network_socket_array; do
         echo "Checking network for '$var'"
         check_network "$var"
