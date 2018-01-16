@@ -65,8 +65,9 @@ check_network()
 
     host="$(eval echo \$$host_key)"
     port="$(eval echo \$$port_key)"
+
     count=0
-    limit=20
+    limit="${NETWORK_CHECK_LIMIT:-20}"
 
     while ! nc -z "$host" "$port"; do
         count=$((count + 1))
