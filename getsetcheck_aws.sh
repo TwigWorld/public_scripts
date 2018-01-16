@@ -1,6 +1,8 @@
 working_dir="$(dirname $(readlink -f "$0"))"
 param_file="${working_dir}/params"
 json_file="/tmp/getsetcheck_json_parameters"
+nc_timout="${NC_TIMEOUT:-5}"
+
 
 source "$param_file"
 
@@ -69,7 +71,7 @@ check_network()
     count=0
     limit="${NETWORK_CHECK_LIMIT:-20}"
 
-    while ! nc -z "$host" "$port"; do
+    while ! nc -z -w "$nc_timout" "$host" "$port"; do
         count=$((count + 1))
         if ((count >= limit)); then
             echo "Could not reach network resource '${host}:${port}'"
