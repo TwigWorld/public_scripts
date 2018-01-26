@@ -5,10 +5,10 @@ nc_timout="${NC_TIMEOUT:-5}"
 network_check_limit="${NETWORK_CHECK_LIMIT:-20}"
 skip_network_checks="${SKIP_NETWORK_CHECKS}"
 
-if [[ "${ENABLE_AWS_PULL:-'True'}" =~ ^[Tt]rue$ ]]; then
-  enable_aws_pull=true
+if [[ "${ENABLE_AWS_PARAMSTORE:-True}" =~ ^[Tt]rue$ ]]; then
+  enable_aws_paramstore=true
 else
-  enable_aws_pull=false
+  enable_aws_paramstore=false
 fi 
 
 working_dir="$(dirname $(readlink -f "$0"))"
@@ -96,7 +96,7 @@ check_network()
     echo "Successfully reached '${host}:${port}'"
 }
 
-if [[ "$enable_aws_pull" == true ]]; then
+if [[ "$enable_aws_paramstore" == true ]]; then
   for var in $mandatory_param_array; do 
       check_set "$var"
       echo "$var='$(eval echo \$$var)'"
@@ -104,7 +104,7 @@ if [[ "$enable_aws_pull" == true ]]; then
 fi 
 
 for var in $optional_param_array; do
-  if [[ "$enable_aws_pull" == true ]]; then 
+  if [[ "$enable_aws_paramstore" == true ]]; then 
     set_ssm_param "$var"
   else
     check_set "$var"
