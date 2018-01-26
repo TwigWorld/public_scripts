@@ -5,7 +5,7 @@ nc_timout="${NC_TIMEOUT:-5}"
 network_check_limit="${NETWORK_CHECK_LIMIT:-20}"
 skip_network_checks="${SKIP_NETWORK_CHECKS}"
 
-if [[ "${ENABLE_AWS_PULL:-'True'}" =~ ^[Tt]rue$ ]]; then
+if [[ "${ENABLE_AWS_PULL:-True}" =~ ^[Tt]rue$ ]]; then
   enable_aws_pull=true
 else
   enable_aws_pull=false
