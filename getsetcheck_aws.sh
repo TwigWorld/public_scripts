@@ -1,6 +1,7 @@
 # This file should be sourced, not run directly
 
 # Runtime flags
+json_file="${JSON_FILE:-/tmp/getsetcheck_json_parameters}"
 nc_timout="${NC_TIMEOUT:-5}"
 network_check_limit="${NETWORK_CHECK_LIMIT:-20}"
 skip_network_checks="${SKIP_NETWORK_CHECKS}"
@@ -13,7 +14,6 @@ fi
 
 working_dir="$(dirname $(readlink -f "$0"))"
 param_file="${working_dir}/params"
-json_file="${JSON_FILE:-/tmp/getsetcheck_json_parameters}"
 
 
 test -e "$param_file" && source "$param_file"
@@ -29,6 +29,19 @@ check_set()
     fi 
 }
 
+pull_aws_params()
+{
+    json=$(aws --region eu-west-1 ssm get-parameters-by-path --path "$prefix" --with-decryption --output json)
+    jq ".Parameters[]" <<< $json >> "${json_file}"
+    next_token=$(jq --raw-output ".NextToken" <<< $json)
+    
+    while [ "$next_token" != 'null' ]; do
+        json=$(aws --region eu-west-1 ssm get-parameters-by-path --path "$prefix" --with-decryption --output json --next-token $next_token)
+        jq ".Parameters[]" <<< $json >> "${json_file}"
+        next_token=$(jq --raw-output ".NextToken" <<< $json)
+    done
+}
+
 set_ssm_param()
 {
     key="$1"
@@ -36,18 +49,6 @@ set_ssm_param()
     value_type=""
 
     if [ -z "$value" ]; then 
-
-        if [ ! -e "$json_file" ]; then
-	    json=$(aws --region eu-west-1 ssm get-parameters-by-path --path "$prefix" --with-decryption --output json)
-	    jq ".Parameters[]" <<< $json >> "${json_file}"
-	    next_token=$(jq --raw-output ".NextToken" <<< $json)
-	    
-	    while [ "$next_token" != 'null' ]; do
-	        json=$(aws --region eu-west-1 ssm get-parameters-by-path --path "$prefix" --with-decryption --output json --next-token $next_token)
-	        jq ".Parameters[]" <<< $json >> "${json_file}"
-	        next_token=$(jq --raw-output ".NextToken" <<< $json)
-	    done
-        fi 
 
         json_value="$(jq "select(.Name==\"${prefix}${key}\") | .Value" --raw-output <"${json_file}")"
         value_type="$(jq "select(.Name==\"${prefix}${key}\") | .Type" --raw-output <"${json_file}")"
@@ -102,7 +103,11 @@ if [[ "$enable_aws_paramstore" == true ]]; then
       check_set "$var"
       echo "$var='$(eval echo \$$var)'"
   done 
+  if [ ! -e "$json_file" ]; then
+      pull_aws_params 
+  fi 
 fi 
+
 
 for var in $optional_param_array; do
   if [[ "$enable_aws_paramstore" == true ]]; then 
