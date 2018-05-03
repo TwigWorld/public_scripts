@@ -13,9 +13,10 @@ fi
 
 working_dir="$(dirname $(readlink -f "$0"))"
 param_file="${working_dir}/params"
-json_file="/tmp/getsetcheck_json_parameters"
+json_file="${JSON_FILE:-/tmp/getsetcheck_json_parameters}"
 
-source "$param_file"
+
+test -e "$param_file" && source "$param_file"
 
 check_set()
 {
