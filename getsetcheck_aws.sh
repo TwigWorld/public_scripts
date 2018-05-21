@@ -12,7 +12,10 @@ else
   enable_aws_paramstore=false
 fi 
 
+
+echo "\$0=$0"
 working_dir="$(dirname $(readlink -f "$0"))"
+echo "working_dir=$working_dir"
 param_file="${working_dir}/params"
 
 
