@@ -24,6 +24,7 @@ The following flags can be defined:
 | Flag | Default | Description |
 | ---- | ------- | ----------- |
 | `ENABLE_AWS_PARAMSTORE` | True | Toggles whether the script pulls variables from AWS parameter store. When deploying to Kubernetes, you probably don't want the container to check AWS |
+| `JSON_FILE` | /tmp/getsetcheck_json_parameters | Where to stored the cached parameters |
 | `NC_TIMEOUT` | 5 | How long to wait for NC to check a network socket |
 | `NETWORK_CHECK_LIMIT` | 20 | The number of times a network socket should be checked before being marked a failure |
 | `SKIP_NETWORK_CHECKS` | \<undefined\> | If defined, will skip the checks defined in `network_socket_array` |

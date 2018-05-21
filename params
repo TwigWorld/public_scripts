@@ -1,0 +1,11 @@
+application=public_scripts
+prefix="/NGSS/${ENVIRONMENT}/${application}/"
+mandatory_param_array='
+  AWS_ACCESS_KEY_ID
+  AWS_SECRET_ACCESS_KEY
+  ENVIRONMENT'
+
+optional_param_array='
+  TEST_VAL_A
+'
+
