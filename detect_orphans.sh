@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-releases=$(helm list --short)
+releases=$(helm list --short --all)
 
 
 orphans=($(grep -Fxv -f <(echo "${releases}") <(kubectl get all --show-all --all-namespaces -o json | jq '.items[].metadata.labels.release' --raw-output | sed '/null/d') | sort | uniq))
