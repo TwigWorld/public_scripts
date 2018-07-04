@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euo pipefail
+
 json="$(jq --compact-output '.' </dev/stdin)"
 IFS=$'\n'
 json_array=($json)
