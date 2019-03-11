@@ -13,6 +13,7 @@ if [[ ! -x "${HOME}/.local/bin/helm-${helm_version}" ]]; then
 
   mkdir -p "/tmp/helm-${helm_version}"
   mkdir -p "${HOME}/.local/bin/"
+
   curl --silent https://kubernetes-helm.storage.googleapis.com/helm-${helm_version}-linux-amd64.tar.gz \
     --output /tmp/helm-${helm_version}/helm-${helm_version}-linux-amd64.tar.gz
 
