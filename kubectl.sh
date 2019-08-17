@@ -11,11 +11,16 @@ install_version() {
   chmod +x "${HOME}/.local/bin/kubectl-${kubectl_version}"
 }
 
-kubectl_version="${KUBECTL_VERSION:-$(\
-  ${HOME}/.local/bin/kubectl-v1.10.0 version --output json | jq '.serverVersion.gitVersion' --raw-output | grep -Eo '^v([0-9]+\.){2}[0-9]+')}"
+init() {
+  kubectl_version="${KUBECTL_VERSION:-$(\
+    KUBECTL_VERSION=v1.10.0 \
+    ${HOME}/.local/bin/kubectl version --output json | jq '.serverVersion.gitVersion' --raw-output | grep -Eo '^v([0-9]+\.){2}[0-9]+')}"
+  
+  if [[ ! -x "${HOME}/.local/bin/kubectl-${kubectl_version}" ]]; then
+    install_version
+  fi
+}
 
-if [[ ! -x "${HOME}/.local/bin/kubectl-${kubectl_version}" ]]; then
-  install_version
-fi
+init
 
 "${HOME}/.local/bin/kubectl-${kubectl_version}" $@
